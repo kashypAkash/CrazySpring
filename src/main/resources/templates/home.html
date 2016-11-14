@@ -18,6 +18,10 @@
     <tr th:each="user : ${users}">
         <td th:text="${user.firstname}"></td>
         <td th:text= "${user.lastname}"></td>
+        <td th:text= "${user.address.street}"></td>
+        <td th:text= "${user.address.city}"></td>
+        <td th:text= "${user.address.state}"></td>
+
     </tr>
 </table>
 <!--
