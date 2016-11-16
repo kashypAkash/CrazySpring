@@ -1,9 +1,8 @@
 package com.akash.lab2.model;
 
-import org.springframework.context.annotation.Bean;
-
 import javax.persistence.*;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class User {
@@ -21,11 +20,11 @@ public class User {
 
     @ManyToMany(cascade=CascadeType.ALL)
     @JoinTable(name="user_phone", joinColumns=@JoinColumn(name="user_id"), inverseJoinColumns=@JoinColumn(name="phone_id"))
-    private Set<Phone> phones;
+    private List<Phone> phones = new ArrayList<>();
 
     public User(){}
 
-    public User(String firstname, String lastname, String title, Address address, Set<Phone> phones) {
+    public User(String firstname, String lastname, String title, Address address, List<Phone> phones) {
         this.firstname = firstname;
         this.lastname = lastname;
         this.title = title;
@@ -33,15 +32,13 @@ public class User {
         this.phones = phones;
     }
 
-
-    public int getId() {
+    public int getUserId() {
         return userId;
     }
 
-    public void setId(int userId) {
+    public void setUserId(int userId) {
         this.userId = userId;
     }
-
 
     public String getFirstname() {
         return firstname;
@@ -67,20 +64,19 @@ public class User {
         this.title = title;
     }
 
-    public Set<Phone> getPhones() {
-        return phones;
-    }
-
-    public void setPhones(Set<Phone> phones) {
-        this.phones = phones;
-    }
-
-
     public Address getAddress() {
         return address;
     }
 
     public void setAddress(Address address) {
         this.address = address;
+    }
+
+    public List<Phone> getPhones() {
+        return phones;
+    }
+
+    public void setPhones(List<Phone> phones) {
+        this.phones = phones;
     }
 }

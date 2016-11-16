@@ -2,9 +2,6 @@ package com.akash.lab2.model;
 
 import javax.persistence.*;
 
-/**
- * Created by akash on 11/12/16.
- */
 @Entity
 public class Phone {
 

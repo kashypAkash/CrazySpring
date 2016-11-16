@@ -5,24 +5,15 @@ import com.akash.lab2.model.Address;
 import com.akash.lab2.model.Phone;
 import com.akash.lab2.model.User;
 import com.akash.lab2.service.UserService;
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.persistence.Query;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Controller
 public class HelloController {
@@ -34,10 +25,32 @@ public class HelloController {
     private UserService userService;
 
     @RequestMapping("/")
-    public String hello(ModelMap modelMap){
+    public String hello(){
+        return "home";
+    }
 
+    @PostMapping("/add")
+    public String check(@RequestParam(value = "firstname") String firstname,
+                      @RequestParam(value = "lastname") String lastname,
+                      @RequestParam(value = "title") String title,
+                      @RequestParam(value = "street") String street,
+                      @RequestParam(value = "city") String city,
+                      @RequestParam(value = "state") String state,
+                      @RequestParam(value = "zip") String zip,
+                      @RequestParam(value = "phones") String phones
+                      ){
 
-        Session session = sessionFactory.openSession();
+        List<Phone> phoneList = userService.getUsersByNumber(phones);
+        if(phoneList!=null){
+            User user = new User(firstname,lastname,title,new Address(street,city,state,zip),phoneList);
+            userService.saveUser(user);
+            return "redirect:/users";
+        }
+            return "badrequest";
+
+    }
+
+/*        Session session = sessionFactory.openSession();
         Transaction transaction = null;
 
         try {
@@ -53,8 +66,8 @@ public class HelloController {
 
 
 
-            /*User user1 = new User("bruce","wayne", "mr", new Address("101 S Fa","yghy","yg","89890"), phones);
-            User user2 = new User("martha","wayne", "mrs", new Address("102 S Fafsd","yghsdafy","ygsdf","89089"), phones);*/
+            User user1 = new User("bruce","wayne", "mr", new Address("101 S Fa","yghy","yg","89890"), phones);
+            User user2 = new User("martha","wayne", "mrs", new Address("102 S Fafsd","yghsdafy","ygsdf","89089"), phones);
             User user3 = new User("thomas","wayne", "mrs", new Address("102 S Fafsd","yghsdafy","ygsdf","89089"), phones);
 
 
@@ -66,16 +79,7 @@ public class HelloController {
             e.printStackTrace();
         } finally {
             session.close();
-        }
-
-        return "home";
-    }
-
-/*    @PostMapping("/user")
-    public String greetingSubmit(@ModelAttribute User user) {
-        System.out.println("user-firstname:" +user.getFirstname());
-        return "home";
-    }*/
+        }*/
 
     @RequestMapping("/del")
     public String delete(){
@@ -101,7 +105,6 @@ public class HelloController {
     public String users(Model modelMap){
         modelMap.addAttribute("users", userService.getUsers());
         return "home";
-
     }
 
 }
