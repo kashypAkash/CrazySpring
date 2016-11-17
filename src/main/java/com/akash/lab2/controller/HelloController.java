@@ -2,12 +2,15 @@ package com.akash.lab2.controller;
 
 
 import com.akash.lab2.model.Address;
+import com.akash.lab2.model.DataObj;
 import com.akash.lab2.model.Phone;
 import com.akash.lab2.model.User;
 import com.akash.lab2.service.PhoneService;
 import com.akash.lab2.service.UserService;
+import com.fasterxml.jackson.databind.util.JSONPObject;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -65,6 +68,15 @@ public class HelloController {
         return "user";
     }
 
+    @RequestMapping(value = "/user/{id}", params = "json")
+    @ResponseBody
+    public User getJosn(Model model,@PathVariable("id") int id){
+        User user = userService.getUserById(id);
+        return user;
+    }
+
+
+
     @RequestMapping(value = "/user/modify",method = RequestMethod.POST)
     public String modify(@ModelAttribute User user, @RequestParam(value="action", required=true) String action,
                                                     @RequestParam(value="id", required=true) int id,
@@ -121,6 +133,32 @@ public class HelloController {
         session.close();
 
         return "editphone";
+    }
+
+    @RequestMapping(value = "/phone/{id}", params = "json")
+    @ResponseBody
+    public DataObj getJsonPhone(Model model, @PathVariable("id") int id){
+        DataObj dataObj = new DataObj();
+        dataObj.setPhone(phoneService.getPhoneById(id));
+
+        Session session = sessionFactory.openSession();
+        List<User> userList = new ArrayList<>();
+
+        try {
+            Query query = session.createNativeQuery("SELECT user_id from user_phone where phone_id=:phone_id");
+            query.setParameter("phone_id",id);
+            List<Integer> userIds =  query.getResultList();
+
+            for(Integer userid:userIds){
+                userList.add(userService.getUserById(userid.intValue()));
+            }
+        }
+        catch (NoResultException e){
+            System.out.println(e.getMessage());
+        }
+        dataObj.setUser(userList);
+        session.close();
+        return dataObj;
     }
 
     @RequestMapping(value = "/phone/{id}", method = RequestMethod.POST)
