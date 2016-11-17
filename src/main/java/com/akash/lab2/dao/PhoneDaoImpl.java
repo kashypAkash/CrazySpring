@@ -1,10 +1,15 @@
 package com.akash.lab2.dao;
 
 import com.akash.lab2.model.Phone;
+import com.akash.lab2.model.User;
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import javax.persistence.NoResultException;
+import java.util.List;
 
 /**
  * Created by akash on 11/16/16.
@@ -33,11 +38,57 @@ public class PhoneDaoImpl implements PhoneDao {
 
     @Override
     public void updatePhone(Phone phone) {
+        Session session = sessionFactory.openSession();
+        // begin a transaction
+        session.beginTransaction();
+        // update and commit transaction
+        try {
+            session.update(phone);
+            session.getTransaction().commit();
+        }
+        catch (HibernateException e){
+            session.getTransaction().rollback();
+        }
+        //close the session
+        session.close();
 
     }
 
     @Override
     public void deletePhone(Phone phone) {
+        Session session = sessionFactory.openSession();
+        // begin a transaction
+        session.beginTransaction();
+        // update and commit transaction
+        try {
+            session.delete(phone);
+            session.getTransaction().commit();
+        }
+        catch (HibernateException e){
+            session.getTransaction().rollback();
+        }
+        //close the session
+        session.close();
+    }
 
+    @Override
+    public Phone getPhoneById(int id) {
+        Session session = sessionFactory.openSession();
+
+        // Get the User by Id
+        Phone phone = null;
+        try{
+            phone = session.get(Phone.class,id);
+        }
+        catch (NoResultException e){
+            System.out.println(e.getMessage());
+        }
+
+        return phone;
+    }
+
+    public List<User> getPhoneUsers(int id){
+
+        return null;
     }
 }

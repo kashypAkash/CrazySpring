@@ -20,10 +20,15 @@ public class PhoneServiceImpl implements PhoneService{
     }
 
     @Override
-    public void updatePhone(Phone phone) {    }
+    public void updatePhone(Phone phone) { phoneDao.updatePhone(phone);   }
 
     @Override
     public void deletePhone(Phone phone) {
+        phoneDao.deletePhone(phone);
+    }
 
+    @Override
+    public Phone getPhoneById(int id) {
+        return phoneDao.getPhoneById(id);
     }
 }

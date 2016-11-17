@@ -6,12 +6,16 @@ import com.akash.lab2.model.Phone;
 import com.akash.lab2.model.User;
 import com.akash.lab2.service.PhoneService;
 import com.akash.lab2.service.UserService;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.NoResultException;
+import javax.persistence.Query;
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -91,6 +95,49 @@ public class HelloController {
     @RequestMapping(value = "/phone", method = RequestMethod.POST)
     public String createPhone(@ModelAttribute Phone phone){
         phoneService.createPhone(phone);
+        return "phone";
+    }
+
+    @RequestMapping(value = "/phone/{id}", method = RequestMethod.GET)
+    public String getPhone(Model model,@PathVariable("id") int id){
+
+        model.addAttribute("phone",phoneService.getPhoneById(id));
+        Session session = sessionFactory.openSession();
+        List<User> userList = new ArrayList<>();
+
+        try {
+            Query query = session.createNativeQuery("SELECT user_id from user_phone where phone_id=:phone_id");
+            query.setParameter("phone_id",id);
+            List<Integer> userIds =  query.getResultList();
+
+            for(Integer userid:userIds){
+                userList.add(userService.getUserById(userid.intValue()));
+            }
+        }
+        catch (NoResultException e){
+            System.out.println(e.getMessage());
+        }
+        model.addAttribute("users",userList);
+        session.close();
+
+        return "editphone";
+    }
+
+    @RequestMapping(value = "/phone/{id}", method = RequestMethod.POST)
+    public String updatePhone(@ModelAttribute Phone phone,@PathVariable("id") int id,
+                              @RequestParam(value="action", required=true) String action,
+                              @RequestParam(value="addressid", required=true) int addressId){
+        phone.setPhoneId(id);
+        phone.getAddress().setAddressId(addressId);
+
+        if(action.equals("update")){
+            phoneService.updatePhone(phone);
+            return String.format("redirect:/phone/%d",phone.getPhoneId());
+        }
+
+        if(action.equals("delete")){
+            phoneService.deletePhone(phone);
+        }
         return "phone";
     }
 
