@@ -14,4 +14,5 @@ public interface UserDao {
     List<Phone> getUsersByNumbers(String numbers);
     void saveUser(User user);
     void deleteUser(User user);
+    void updateUser(User user);
 }

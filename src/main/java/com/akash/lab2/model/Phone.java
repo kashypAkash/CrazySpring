@@ -22,6 +22,12 @@ public class Phone {
         this.description = description;
     }
 
+    public Phone(String number, String description, Address address) {
+        this.number = number;
+        this.description = description;
+        this.address = address;
+    }
+
     public int getPhoneId() {
         return phoneId;
     }
@@ -46,5 +52,12 @@ public class Phone {
         this.description = description;
     }
 
+    public Address getAddress() {
+        return address;
+    }
+
+    public void setAddress(Address address) {
+        this.address = address;
+    }
 
 }

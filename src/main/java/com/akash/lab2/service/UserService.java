@@ -13,5 +13,6 @@ public interface UserService {
     User getUserById(int id);
     void saveUser(User user);
     void deleteUser(User user);
+    void updateUser(User user);
     List<Phone> getUsersByNumber(String numbers);
 }

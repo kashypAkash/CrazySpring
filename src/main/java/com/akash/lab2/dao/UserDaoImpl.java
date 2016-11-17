@@ -43,16 +43,20 @@ public class UserDaoImpl implements UserDao {
     @Override
     public User getUserById(int id) {
 
-   /*     //Open the session
+        //Open the session
         Session session = sessionFactory.openSession();
 
         // Get the User by Id
-        User user = session.get(User.class,id);
-        Hibernate.initialize(user.get());
-        session.close();
-        return user;*/
+        User user = null;
+        try{
+             user = session.get(User.class,id);
+        }
+        catch (NoResultException e){
+            System.out.println(e.getMessage());
+        }
 
-        return null;
+        return user;
+
     }
 
     @Override
@@ -88,8 +92,10 @@ public class UserDaoImpl implements UserDao {
         // begin a transaction
         session.beginTransaction();
 
-        // save the user & commit trasaction
         session.save(user);
+
+        // save the user & commit trasaction
+
         session.getTransaction().commit();
 
         //close the session
@@ -99,6 +105,33 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public void deleteUser(User user) {
+        Session session = sessionFactory.openSession();
+
+        session.beginTransaction();
+
+        session.delete(user);
+
+        session.getTransaction().commit();
+
+        session.close();
+    }
+
+    @Override
+    public void updateUser(User user) {
+
+        Session session = sessionFactory.openSession();
+        // begin a transaction
+        session.beginTransaction();
+        // update and commit transaction
+        try {
+            session.update(user);
+            session.getTransaction().commit();
+        }
+        catch (HibernateException e){
+            session.getTransaction().rollback();
+        }
+        //close the session
+        session.close();
 
     }
 }
